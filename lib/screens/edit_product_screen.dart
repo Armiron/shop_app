@@ -226,7 +226,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                             const InputDecoration(labelText: 'Image URL'),
                         keyboardType: TextInputType.url,
                         textInputAction: TextInputAction.done,
-                        controller: _isInit ? _imageUrlController : null,
+                        // controller: _isInit ? _imageUrlController : null,
                         focusNode: _imageUrlFocusNode,
                         onFieldSubmitted: (value) => {_saveForm()},
                         onSaved: (newValue) {
