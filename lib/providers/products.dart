@@ -128,9 +128,20 @@ class Products with ChangeNotifier {
     // });
   }
 
-  void updateProduct(String id, Product newProduct) {
+  Future<void> updateProduct(String id, Product newProduct) async {
     final productIndex = _items.indexWhere((element) => element.id == id);
     if (productIndex >= 0) {
+      final urlString =
+          "https://testflutterproject-719b6-default-rtdb.europe-west1.firebasedatabase.app/products/$id.json";
+      Uri url = Uri.parse(urlString);
+      await http.patch(url,
+          body: json.encode({
+            'title': newProduct.title,
+            'description': newProduct.description,
+            'imageUrl': newProduct.imageUrl,
+            'price': newProduct.price,
+            // 'isFavorite': newProduct.isFavorite,
+          }));
       _items[productIndex] = newProduct;
       notifyListeners();
     }
