@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import '../providers/products.dart';
 import '../providers/cart.dart';
 import '../providers/product.dart';
 import '../screens/product_detail_screen.dart';
 import 'package:provider/provider.dart';
 
-class ProductItem extends StatelessWidget {
+class ProductItem extends StatefulWidget {
   // final String id;
   // final String title;
   // final String imageUrl;
@@ -17,8 +18,16 @@ class ProductItem extends StatelessWidget {
   });
 
   @override
+  State<ProductItem> createState() => _ProductItemState();
+}
+
+class _ProductItemState extends State<ProductItem> {
+  @override
   Widget build(BuildContext context) {
+    final scaffold = ScaffoldMessenger.of(context);
     final product = Provider.of<Product>(context, listen: false); // to get once
+    final products =
+        Provider.of<Products>(context, listen: false); // to get once
     final cart = Provider.of<Cart>(context);
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
@@ -35,8 +44,20 @@ class ProductItem extends StatelessWidget {
                 icon: Icon(product.isFavorite
                     ? Icons.favorite
                     : Icons.favorite_border),
-                onPressed: () {
-                  product.toggleFavoriteStatus();
+                onPressed: () async {
+                  try {
+                    await Provider.of<Products>(context, listen: false)
+                        .toggleFavoriteStatus(product.id);
+                    setState(() {
+                      product.isFavorite = !product.isFavorite;
+                    });
+                  } catch (e) {
+                    scaffold.showSnackBar(const SnackBar(
+                        content: Text(
+                      'Favorite Failed!',
+                      textAlign: TextAlign.center,
+                    )));
+                  }
                 },
                 color: Theme.of(context).colorScheme.error,
               ),

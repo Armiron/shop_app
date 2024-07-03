@@ -163,4 +163,21 @@ class Products with ChangeNotifier {
       throw HttpException('Could not delete product.');
     }
   }
+
+  Future<void> toggleFavoriteStatus(String id) async {
+    final urlString =
+        "https://testflutterproject-719b6-default-rtdb.europe-west1.firebasedatabase.app/products/$id.json";
+    Uri url = Uri.parse(urlString);
+    final productIndex = _items.indexWhere((element) => element.id == id);
+    final product = _items[productIndex];
+    if (productIndex >= 0) {
+      final response = await http.patch(url,
+          body: json.encode({'isFavorite': !product.isFavorite}));
+      if (response.statusCode >= 400) {
+        _items[productIndex].isFavorite = !product.isFavorite;
+        notifyListeners();
+        throw HttpException('Could not save favorite.');
+      }
+    }
+  }
 }
