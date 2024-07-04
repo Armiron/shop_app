@@ -105,6 +105,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
       try {
         await Provider.of<Products>(context, listen: false)
             .addProduct(_editedProduct);
+        _isLoading = false;
       } catch (err) {
         print('error here');
         // ignore: use_build_context_synchronously

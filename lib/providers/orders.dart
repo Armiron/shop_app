@@ -35,21 +35,26 @@ class Orders with ChangeNotifier {
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
       final List<OrderItem> loadedOrders = [];
       extractedData.forEach((orderId, orderData) {
+        print(orderData['products']);
         loadedOrders.add(OrderItem(
           id: orderId,
           amount: orderData['amount'],
-          dateTime: DateFormat('yMMdd:HH:mm.sss').parse(orderData['dateTime']),
+          dateTime:
+              DateFormat('yyyy-MM-dd hh:mm:ss').parse(orderData['dateTime']),
+          // products: []
           products: (orderData['products'] as List<dynamic>)
-              .map((product) => CartItem(
-                    id: product['id'],
-                    title: product['title'],
-                    quantity: product['quantity'],
-                    price: product['price'],
-                  ))
+              .map(
+                (product) => CartItem(
+                  id: product['id'],
+                  title: product['title'],
+                  quantity: product['quantity'],
+                  price: product['price'],
+                ),
+              )
               .toList(),
         ));
       });
-      _orders = loadedOrders;
+      _orders = loadedOrders.reversed.toList();
       print('done');
     } catch (e) {
       print(e);
@@ -60,22 +65,22 @@ class Orders with ChangeNotifier {
     const urlString =
         "https://testflutterproject-719b6-default-rtdb.europe-west1.firebasedatabase.app/orders.json";
     Uri url = Uri.parse(urlString);
-    // for (var cart in cartProducts) {
-    //   print(cart);
-    // }
+    if (cartProducts.length == 0) {
+      return;
+    }
     try {
       final response = await http.post(url,
-          body: jsonEncode({
+          body: json.encode({
             "amount": total,
-            "products": jsonEncode(cartProducts
+            "products": cartProducts
                 .map((cartItem) => {
                       'id': cartItem.id,
                       'title': cartItem.title,
                       'quantity': cartItem.quantity,
                       'price': cartItem.price,
                     })
-                .toList()),
-            "dateTime": DateFormat('yMMdd:HH:mm.sss').format(DateTime.now())
+                .toList(),
+            "dateTime": DateFormat('yyyy-MM-dd hh:mm:ss').format(DateTime.now())
           }));
       _orders.insert(
         0,

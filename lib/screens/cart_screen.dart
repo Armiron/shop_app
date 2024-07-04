@@ -4,13 +4,21 @@ import '../providers/cart.dart' show Cart;
 import '../widgets/cart_item.dart';
 import '../providers/orders.dart';
 
-class CartScreen extends StatelessWidget {
+class CartScreen extends StatefulWidget {
   static const routeName = '/cart';
   const CartScreen({super.key});
 
   @override
+  State<CartScreen> createState() => _CartScreenState();
+}
+
+class _CartScreenState extends State<CartScreen> {
+  var _isOrdering = false;
+
+  @override
   Widget build(BuildContext context) {
     final cart = Provider.of<Cart>(context);
+    final ordersProvider = Provider.of<Orders>(context, listen: false);
     return Scaffold(
       appBar: AppBar(title: const Text('Your Cart')),
       body: Column(
@@ -33,17 +41,28 @@ class CartScreen extends StatelessWidget {
                     backgroundColor: Theme.of(context).primaryColor,
                   ),
                   TextButton(
-                    onPressed: () {
-                      Provider.of<Orders>(context, listen: false).addOrder(
+                    onPressed: () async {
+                      setState(() {
+                        _isOrdering = true;
+                      });
+                      await ordersProvider.addOrder(
                         cart.items.values.toList(),
                         cart.totalAmount,
                       );
                       cart.clear();
+                      setState(() {
+                        _isOrdering = false;
+                      });
                     },
-                    child: const Text(
-                      'ORDER NOW',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
+                    child: _isOrdering
+                        ? SizedBox(
+                            width: 30,
+                            height: 30,
+                            child: const CircularProgressIndicator())
+                        : const Text(
+                            'ORDER NOW',
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
                   ),
                 ],
               ),
