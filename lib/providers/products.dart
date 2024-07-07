@@ -43,7 +43,7 @@ class Products with ChangeNotifier {
 
   var _showFavoritesOnly = false;
   final String? authToken;
-  final String userId;
+  final String? userId;
   Products(this.authToken, this.userId, this._items);
 
   List<Product> get items {
@@ -176,7 +176,7 @@ class Products with ChangeNotifier {
     }
   }
 
-  Future<void> toggleFavoriteStatus(String id, String userId) async {
+  Future<void> toggleFavoriteStatus(String id, String? userId) async {
     final urlString =
         "https://testflutterproject-719b6-default-rtdb.europe-west1.firebasedatabase.app/userFavorites/$userId/$id.json?auth=$authToken";
     Uri url = Uri.parse(urlString);
