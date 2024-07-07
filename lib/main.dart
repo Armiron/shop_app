@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import './screens/splash_screen.dart';
 import './providers/auth.dart';
 import './screens/orders_screen.dart';
 import './screens/cart_screen.dart';
@@ -19,6 +20,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print('hello');
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
@@ -79,7 +81,16 @@ class MyApp extends StatelessWidget {
                 const UserProductsScreen(),
             EditProductScreen.routeName: (context) => const EditProductScreen(),
           },
-          home: auth.isAuth ? ProductsOverviewScreen() : AuthScreen(),
+          home: auth.isAuth
+              ? const ProductsOverviewScreen()
+              : FutureBuilder(
+                  future: auth.tryAutoLogin(),
+                  builder: (context, authResultSnapshot) =>
+                      authResultSnapshot.connectionState ==
+                              ConnectionState.waiting
+                          ? SplashScreen()
+                          : AuthScreen(),
+                ),
         ),
       ),
     );
