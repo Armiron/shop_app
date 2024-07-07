@@ -43,7 +43,8 @@ class Products with ChangeNotifier {
 
   var _showFavoritesOnly = false;
   final String? authToken;
-  Products(this.authToken, this._items);
+  final String userId;
+  Products(this.authToken, this.userId, this._items);
 
   List<Product> get items {
     // if (_showFavoritesOnly) {
@@ -73,18 +74,24 @@ class Products with ChangeNotifier {
   Future<void> fetchAndSetProducts() async {
     final urlString =
         "https://testflutterproject-719b6-default-rtdb.europe-west1.firebasedatabase.app/products.json?auth=$authToken";
+    final urlString2 =
+        "https://testflutterproject-719b6-default-rtdb.europe-west1.firebasedatabase.app/userFavorites/$userId.json?auth=$authToken";
     Uri url = Uri.parse(urlString);
+    Uri url2 = Uri.parse(urlString2);
     try {
       final response = await http.get(url);
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
       final List<Product> loadedProducts = [];
+      final favoriteResponse = await http.get(url2);
+      final favoriteData = json.decode(favoriteResponse.body);
       extractedData.forEach((prodId, prodData) {
         loadedProducts.add(Product(
           id: prodId,
           title: prodData['title'],
           description: prodData['description'],
           price: prodData['price'],
-          isFavorite: prodData['isFavorite'],
+          isFavorite:
+              favoriteData == null ? false : favoriteData[prodId] ?? false,
           imageUrl: prodData['imageUrl'],
         ));
       });
@@ -108,7 +115,7 @@ class Products with ChangeNotifier {
             "description": product.description,
             "price": product.price,
             "imageUrl": product.imageUrl,
-            "isFavorite": product.isFavorite,
+            // "isFavorite": product.isFavorite,
           }));
       final newProduct = Product(
         id: json.decode(response.body)["name"],
@@ -166,15 +173,15 @@ class Products with ChangeNotifier {
     }
   }
 
-  Future<void> toggleFavoriteStatus(String id) async {
+  Future<void> toggleFavoriteStatus(String id, String userId) async {
     final urlString =
-        "https://testflutterproject-719b6-default-rtdb.europe-west1.firebasedatabase.app/products/$id.json?auth=$authToken";
+        "https://testflutterproject-719b6-default-rtdb.europe-west1.firebasedatabase.app/userFavorites/$userId/$id.json?auth=$authToken";
     Uri url = Uri.parse(urlString);
     final productIndex = _items.indexWhere((element) => element.id == id);
     final product = _items[productIndex];
     if (productIndex >= 0) {
-      final response = await http.patch(url,
-          body: json.encode({'isFavorite': !product.isFavorite}));
+      final response =
+          await http.put(url, body: json.encode(!product.isFavorite));
       if (response.statusCode >= 400) {
         _items[productIndex].isFavorite = !product.isFavorite;
         notifyListeners();

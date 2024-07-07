@@ -25,9 +25,12 @@ class MyApp extends StatelessWidget {
             create: (context) =>
                 Auth()), // This one has to be first so the others can depend on it
         ChangeNotifierProxyProvider<Auth, Products>(
-            create: (context) => Products(null, []),
-            update: (context, auth, previousProducts) => Products(auth.token,
-                previousProducts == null ? [] : previousProducts.items)),
+            create: (context) => Products(null, '', []),
+            update: (context, auth, previousProducts) => Products(
+                  auth.token,
+                  auth.userId,
+                  previousProducts == null ? [] : previousProducts.items,
+                )),
         ChangeNotifierProxyProvider<Auth, Cart>(
           create: (context) => Cart(null, {}),
           update: (context, auth, previousCart) =>

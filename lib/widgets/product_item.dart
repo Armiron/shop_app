@@ -50,7 +50,7 @@ class _ProductItemState extends State<ProductItem> {
                 onPressed: () async {
                   try {
                     await Provider.of<Products>(context, listen: false)
-                        .toggleFavoriteStatus(product.id);
+                        .toggleFavoriteStatus(product.id, auth.userId);
                     setState(() {
                       product.isFavorite = !product.isFavorite;
                     });
