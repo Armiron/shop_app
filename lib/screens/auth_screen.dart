@@ -138,6 +138,7 @@ class _AuthCardState extends State<AuthCard> {
         await Provider.of<Auth>(context, listen: false)
             .signUp(_authData['email']!, _authData['password']!);
       }
+      // Navigator.of(context).pushReplacementNamed('/products-overview');
     } on HttpException catch (error) {
       var errorMessage = 'Auth failed!';
       // switch (error.toString()) {

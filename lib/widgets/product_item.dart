@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../providers/products.dart';
 import '../providers/cart.dart';
 import '../providers/product.dart';
+import '../providers/auth.dart';
 import '../screens/product_detail_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -29,6 +30,8 @@ class _ProductItemState extends State<ProductItem> {
     final products =
         Provider.of<Products>(context, listen: false); // to get once
     final cart = Provider.of<Cart>(context);
+    final auth =
+        Provider.of<Auth>(context, listen: false); // i can have auth.token
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
       child: GridTile(

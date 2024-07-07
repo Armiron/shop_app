@@ -21,41 +21,57 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (context) => Auth()),
-        ChangeNotifierProvider(create: (context) => Products()),
-        ChangeNotifierProvider(create: (context) => Cart()),
-        ChangeNotifierProvider(create: (context) => Orders())
-      ],
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'MyShop',
-        theme: ThemeData(
-          fontFamily: 'Lato',
-          primarySwatch: Colors.purple,
-          colorScheme: const ColorScheme(
-            primary: Colors.purple,
-            background: Colors.black,
-            brightness: Brightness.light,
-            error: Colors.redAccent,
-            secondary: Colors.deepOrange,
-            onSecondary: Colors.orangeAccent,
-            onBackground: Colors.black,
-            onError: Colors.red,
-            onPrimary: Colors.white,
-            surface: Colors.black,
-            onSurface: Colors.black12,
-          ),
+        ChangeNotifierProvider(
+            create: (context) =>
+                Auth()), // This one has to be first so the others can depend on it
+        ChangeNotifierProxyProvider<Auth, Products>(
+            create: (context) => Products(null, []),
+            update: (context, auth, previousProducts) => Products(auth.token,
+                previousProducts == null ? [] : previousProducts.items)),
+        ChangeNotifierProxyProvider<Auth, Cart>(
+          create: (context) => Cart(null, {}),
+          update: (context, auth, previousCart) =>
+              Cart(auth.token, previousCart == null ? {} : previousCart.items),
         ),
-        routes: {
-          // ProductsOverviewScreen.ro
-          ProductDetailScreen.routeName: (context) =>
-              const ProductDetailScreen(),
-          CartScreen.routeName: (context) => const CartScreen(),
-          OrdersScreen.routeName: (context) => const OrdersScreen(),
-          UserProductsScreen.routeName: (context) => const UserProductsScreen(),
-          EditProductScreen.routeName: (context) => const EditProductScreen(),
-        },
-        home: AuthScreen(),
+        ChangeNotifierProxyProvider<Auth, Orders>(
+          create: (context) => Orders(null, []),
+          update: (context, auth, previousOrders) => Orders(
+              auth.token, previousOrders == null ? [] : previousOrders.orders),
+        )
+      ],
+      child: Consumer<Auth>(
+        builder: (context, auth, child) => MaterialApp(
+          debugShowCheckedModeBanner: false,
+          title: 'MyShop',
+          theme: ThemeData(
+            fontFamily: 'Lato',
+            primarySwatch: Colors.purple,
+            colorScheme: const ColorScheme(
+              primary: Colors.purple,
+              background: Colors.black,
+              brightness: Brightness.light,
+              error: Colors.redAccent,
+              secondary: Colors.deepOrange,
+              onSecondary: Colors.orangeAccent,
+              onBackground: Colors.black,
+              onError: Colors.red,
+              onPrimary: Colors.white,
+              surface: Colors.black,
+              onSurface: Colors.black12,
+            ),
+          ),
+          routes: {
+            // ProductsOverviewScreen.ro
+            ProductDetailScreen.routeName: (context) =>
+                const ProductDetailScreen(),
+            CartScreen.routeName: (context) => const CartScreen(),
+            OrdersScreen.routeName: (context) => const OrdersScreen(),
+            UserProductsScreen.routeName: (context) =>
+                const UserProductsScreen(),
+            EditProductScreen.routeName: (context) => const EditProductScreen(),
+          },
+          home: auth.isAuth ? ProductsOverviewScreen() : AuthScreen(),
+        ),
       ),
     );
   }
