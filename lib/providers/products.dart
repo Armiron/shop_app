@@ -71,9 +71,11 @@ class Products with ChangeNotifier {
   //   notifyListeners();
   // }
 
-  Future<void> fetchAndSetProducts() async {
+  Future<void> fetchAndSetProducts([bool filterByUsers = false]) async {
+    final filterString =
+        filterByUsers ? 'orderBy="creatorId"&equalTo="$userId"' : '';
     final urlString =
-        "https://testflutterproject-719b6-default-rtdb.europe-west1.firebasedatabase.app/products.json?auth=$authToken";
+        "https://testflutterproject-719b6-default-rtdb.europe-west1.firebasedatabase.app/products.json?auth=$authToken&$filterString";
     final urlString2 =
         "https://testflutterproject-719b6-default-rtdb.europe-west1.firebasedatabase.app/userFavorites/$userId.json?auth=$authToken";
     Uri url = Uri.parse(urlString);
@@ -115,6 +117,7 @@ class Products with ChangeNotifier {
             "description": product.description,
             "price": product.price,
             "imageUrl": product.imageUrl,
+            "creatorId": userId,
             // "isFavorite": product.isFavorite,
           }));
       final newProduct = Product(
