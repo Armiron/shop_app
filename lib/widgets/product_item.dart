@@ -95,15 +95,18 @@ class _ProductItemState extends State<ProductItem> {
             //   builder: (context) => ProductDetailScreen(title: title),
             // ));
           },
-          child: FadeInImage(
-            placeholder:
-                const AssetImage('assets/images/product-placeholder.png'),
-            // image: Image.network(
-            //   product.imageUrl,
-            //   fit: BoxFit.cover,
-            // ),
-            image: NetworkImage(product.imageUrl),
-            fit: BoxFit.cover,
+          child: Hero(
+            tag: product.id,
+            child: FadeInImage(
+              placeholder:
+                  const AssetImage('assets/images/product-placeholder.png'),
+              // image: Image.network(
+              //   product.imageUrl,
+              //   fit: BoxFit.cover,
+              // ),
+              image: NetworkImage(product.imageUrl),
+              fit: BoxFit.cover,
+            ),
           ),
         ),
       ),
