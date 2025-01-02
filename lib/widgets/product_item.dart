@@ -35,72 +35,78 @@ class _ProductItemState extends State<ProductItem> {
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
       child: GridTile(
-          footer: GridTileBar(
-            title: Text(
-              product.title,
-              textAlign: TextAlign.center,
-            ),
-            backgroundColor: Colors.black87,
-            leading: Consumer<Product>(
-              // updates only the icon that changes
-              builder: (context, product, child) => IconButton(
-                icon: Icon(product.isFavorite
-                    ? Icons.favorite
-                    : Icons.favorite_border),
-                onPressed: () async {
-                  try {
-                    await Provider.of<Products>(context, listen: false)
-                        .toggleFavoriteStatus(product.id, auth.userId);
-                    setState(() {
-                      product.isFavorite = !product.isFavorite;
-                    });
-                  } catch (e) {
-                    scaffold.showSnackBar(const SnackBar(
-                        content: Text(
-                      'Favorite Failed!',
-                      textAlign: TextAlign.center,
-                    )));
-                  }
-                },
-                color: Theme.of(context).colorScheme.error,
-              ),
-              child: const Text(
-                  'Never changes, is given to the top function as child arg'),
-            ),
-            trailing: IconButton(
-              icon: const Icon(Icons.shopping_cart),
-              onPressed: () {
-                cart.addItem(product.id, product.price, product.title);
-                ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                // Nearest Scaffold widget not same widget tree
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content: Text('Added item to cart!'),
-                  duration: Duration(seconds: 2),
-                  action: SnackBarAction(
-                      label: 'Undo',
-                      onPressed: () {
-                        cart.removeSingleItem(product.id);
-                      }),
-                ));
-              },
-              color: Theme.of(context).colorScheme.secondary,
-            ),
+        footer: GridTileBar(
+          title: Text(
+            product.title,
+            textAlign: TextAlign.center,
           ),
-          child: GestureDetector(
-            onTap: () {
-              Navigator.of(context).pushNamed(
-                ProductDetailScreen.routeName,
-                arguments: product.id,
-              );
-              // Navigator.of(context).push(MaterialPageRoute(
-              //   builder: (context) => ProductDetailScreen(title: title),
-              // ));
-            },
-            child: Image.network(
-              product.imageUrl,
-              fit: BoxFit.cover,
+          backgroundColor: Colors.black87,
+          leading: Consumer<Product>(
+            // updates only the icon that changes
+            builder: (context, product, child) => IconButton(
+              icon: Icon(
+                  product.isFavorite ? Icons.favorite : Icons.favorite_border),
+              onPressed: () async {
+                try {
+                  await Provider.of<Products>(context, listen: false)
+                      .toggleFavoriteStatus(product.id, auth.userId);
+                  setState(() {
+                    product.isFavorite = !product.isFavorite;
+                  });
+                } catch (e) {
+                  scaffold.showSnackBar(const SnackBar(
+                      content: Text(
+                    'Favorite Failed!',
+                    textAlign: TextAlign.center,
+                  )));
+                }
+              },
+              color: Theme.of(context).colorScheme.error,
             ),
-          )),
+            child: const Text(
+                'Never changes, is given to the top function as child arg'),
+          ),
+          trailing: IconButton(
+            icon: const Icon(Icons.shopping_cart),
+            onPressed: () {
+              cart.addItem(product.id, product.price, product.title);
+              ScaffoldMessenger.of(context).hideCurrentSnackBar();
+              // Nearest Scaffold widget not same widget tree
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: Text('Added item to cart!'),
+                duration: Duration(seconds: 2),
+                action: SnackBarAction(
+                    label: 'Undo',
+                    onPressed: () {
+                      cart.removeSingleItem(product.id);
+                    }),
+              ));
+            },
+            color: Theme.of(context).colorScheme.secondary,
+          ),
+        ),
+        child: GestureDetector(
+          onTap: () {
+            Navigator.of(context).pushNamed(
+              ProductDetailScreen.routeName,
+              arguments: product.id,
+            );
+            // Navigator.of(context).push(MaterialPageRoute(
+            //   builder: (context) => ProductDetailScreen(title: title),
+            // ));
+          },
+          child: FadeInImage(
+            placeholder:
+                const AssetImage('assets/images/product-placeholder.png'),
+            // image: Image.network(
+            //   product.imageUrl,
+            //   fit: BoxFit.cover,
+            // ),
+            image: NetworkImage(product.imageUrl),
+            fit: BoxFit.cover,
+          ),
+        ),
+      ),
     );
   }
 }
