@@ -12,6 +12,7 @@ import './providers/products.dart';
 import './screens/user_products_screen.dart';
 import './screens/edit_product_screen.dart';
 import './screens/auth_screen.dart';
+import './helpers/custom_route.dart';
 
 void main() => runApp(const MyApp());
 
@@ -57,6 +58,12 @@ class MyApp extends StatelessWidget {
           theme: ThemeData(
             fontFamily: 'Lato',
             primarySwatch: Colors.purple,
+            pageTransitionsTheme: PageTransitionsTheme(
+              builders: {
+                TargetPlatform.android: CustomPageTransitionBuilder(),
+                TargetPlatform.iOS: CustomPageTransitionBuilder(),
+              },
+            ),
             colorScheme: const ColorScheme(
               primary: Colors.purple,
               background: Colors.black,
